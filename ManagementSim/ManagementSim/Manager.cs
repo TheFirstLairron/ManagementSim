@@ -12,11 +12,11 @@ namespace ManagementSim
         public const string ADD_FACTORY = "ADD FACTORY";
         public const string TOGGLE_FACTORY = "TOGGLE FACTORY";
         public const string TOGGLE_PLANT = "TOGGLE PLANT";
+        public const string DISPLAY_ALL = "DISPLAY ALL";
 
-        public const string INVALID_ACTION = "That is not a valid action";
+        public const string INVALID_ACTION = "That is not a valid action, press any key to try again.";
 
         public const string EXIT_PHRASES = "QUIT EXIT DONE";
-
 
         private City City { get; set; }
 
@@ -52,8 +52,13 @@ namespace ManagementSim
                 case TOGGLE_PLANT:
                     City.TogglePlant();
                     break;
+
+                case DISPLAY_ALL:
+                    City.DisplayAllLists();
+                    break;
                 default:
                     Console.WriteLine(INVALID_ACTION);
+                    Console.ReadKey();
                     break;
             }
         }

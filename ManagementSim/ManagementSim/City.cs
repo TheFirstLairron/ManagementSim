@@ -4,15 +4,19 @@ using System.Linq;
 
 namespace ManagementSim
 {
-    class City
+    public class City
     {
+        private const string NEGATIVE_NAME_PROMPT = "The provided name is not valid or is already in use.";
+
         private List<Factory> Factories { get; set; }
         private List<PowerPlant> Plants { get; set; }
+        private List<Housing> Houses { get; set; }
 
         public City()
         {
             Factories = new List<Factory>();
             Plants = new List<PowerPlant>();
+            Houses = new List<Housing>();
         }
 
         public void Update()
@@ -21,7 +25,22 @@ namespace ManagementSim
             PowerActiveFactories();
         }
 
-        public void DisplayListOrErrorMessage<T>(List<T> list, string errorMessage)
+        public void DisplayAllLists()
+        {
+            string errorMessage = "There are none to display.";
+
+            Console.WriteLine("Factories: ");
+            DisplayListOrErrorMessage<Factory>(Factories, errorMessage, false);
+
+            Console.WriteLine("Power Plants: ");
+            DisplayListOrErrorMessage<PowerPlant>(Plants, errorMessage, false);
+
+            // Dont disable the key prompt on the last list
+            Console.WriteLine("Housing: ");
+            DisplayListOrErrorMessage<Housing>(Houses, errorMessage);
+        }
+
+        public void DisplayListOrErrorMessage<T>(List<T> list, string errorMessage, bool promptForKey = true)
         {
             if (list.Count > 0)
             {
@@ -33,17 +52,21 @@ namespace ManagementSim
             else
             {
                 Console.WriteLine(errorMessage);
+                Console.WriteLine();
             }
 
-            Console.WriteLine("Press any key to return to the main menu...");
-            Console.ReadKey();
+            if (promptForKey)
+            {
+                Console.WriteLine("Press any key to return to the main menu...");
+                Console.ReadKey();
+            }
         }
 
         public void DeactivateAllPower()
         {
             foreach(var fact in Factories)
             {
-                fact.Powered = false;
+                fact.IsPowered = false;
             }
         }
 
@@ -55,7 +78,7 @@ namespace ManagementSim
 
             for (int i = 0; i < power && i < activeFactories.Count(); i++)
             {
-                activeFactories[i].Powered = true;
+                activeFactories[i].IsPowered = true;
             }
         }
 
@@ -66,24 +89,9 @@ namespace ManagementSim
 
         public void CreateFactory()
         {
-            string name = "";
-            bool isValidName = false;
+            string name = PromptForValidName<Factory>(Factories, "What is the name of the factory: ");
 
-            do
-            {
-                Console.Write("What is the name of this factory: ");
-                name = Console.ReadLine();
-
-                isValidName = IsNameAvailable<Factory>(Factories, name);
-
-                if (!isValidName)
-                {
-                    Console.WriteLine("The provided name is not valid.");
-                }
-
-            } while (!isValidName);
-
-            Factory factory = new Factory(name);
+            Factory factory = new Factory(name, BuildingType.FACTORY);
 
             Factories.Add(factory);
         }
@@ -95,24 +103,9 @@ namespace ManagementSim
 
         public void CreatePlant()
         {
-            string name = "";
-            bool isValidName = false;
+            string name = PromptForValidName<PowerPlant>(Plants, "What is the name of this power plant: ");
 
-            do
-            {
-                Console.Write("What is the name of this power plant: ");
-                name = Console.ReadLine();
-
-                isValidName = IsNameAvailable<PowerPlant>(Plants, name);
-
-                if (!isValidName)
-                {
-                    Console.WriteLine("The provided name is not valid.");
-                }
-
-            } while (!isValidName);
-
-            PowerPlant plant = new PowerPlant(name);
+            PowerPlant plant = new PowerPlant(name, BuildingType.POWERPLANT);
 
             Plants.Add(plant);
         }
@@ -154,6 +147,29 @@ namespace ManagementSim
             ToggleBuilding<PowerPlant>(plant);
         }
 
+        public string PromptForValidName<T>(List<T> list, string prompt, string negative = NEGATIVE_NAME_PROMPT) where T : Building
+        {
+            string name = "";
+            bool isValidName = false;
+
+            do
+            {
+                Console.Write(prompt);
+                name = Console.ReadLine();
+
+                isValidName = IsNameAvailable<T>(list, name);
+
+                if (!isValidName)
+                {
+                    Console.Clear();
+                    Console.WriteLine(negative);
+                }
+
+            } while (!isValidName);
+
+            return name;
+        }
+
         private void ToggleBuilding<T>(T building) where T : Building
         {
             building.Toggle();
@@ -188,5 +204,6 @@ namespace ManagementSim
 
             return results;
         }
+
     }
 }

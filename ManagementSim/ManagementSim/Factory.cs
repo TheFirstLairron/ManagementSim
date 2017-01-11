@@ -1,22 +1,22 @@
 ﻿namespace ManagementSim
 {
-    public class Factory : Building
+    public class Factory : Building, IPowerable
     {
-        public bool Powered { get; set; }
+        public bool IsPowered { get; set; }
 
         public Factory() : base()
         {
-            Powered = false;
+            IsPowered = false;
         }
 
-        public Factory(string name) : base(name)
+        public Factory(string name, BuildingType type) : base(name, type)
         {
-            Powered = false;
+            IsPowered = false;
         }
 
         public override string ToString()
         {
-            return $"Name: {Name}\nPowered On: {On}\nRecieving Power: {Powered}\n";
+            return $"Name: {Name}\nPowered On: {On}\nRecieving Power: {IsPowered}\n";
         }
     }
 }

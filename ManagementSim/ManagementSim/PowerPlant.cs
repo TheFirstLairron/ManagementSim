@@ -6,7 +6,7 @@
         {
         }
 
-        public PowerPlant(string name) : base(name)
+        public PowerPlant(string name, BuildingType type) : base(name, type)
         {
         }
 
